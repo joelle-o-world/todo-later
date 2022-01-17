@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  editTaskMessage,
   selectAllTasks,
   selectUnblockedTasks,
   Task,
@@ -34,7 +35,17 @@ export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
         checked={task.completed}
         onClick={() => dispatch(toggleTask(task.id))}
       />
-      <input className="TaskViewMessage" type="text" value={task.message} />
+      <input
+        className="TaskViewMessage"
+        type="text"
+        value={task.message}
+        readOnly={task.completed}
+        onChange={(e) =>
+          dispatch(
+            editTaskMessage({ taskId: task.id, message: e.target.value })
+          )
+        }
+      />
       <button>Zz</button>
     </li>
   );

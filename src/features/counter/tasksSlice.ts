@@ -56,11 +56,23 @@ export const tasksSlice = createSlice({
       delete state.tasks[action.payload];
       // TODO: Handle dependent tasks?
     },
+
+    editTaskMessage: (
+      state,
+      action: PayloadAction<{ taskId: TaskId; message: string }>
+    ) => {
+      state.tasks[action.payload.taskId].message = action.payload.message;
+    },
   },
 });
 
-export const { addTask, completeTask, toggleTask, deleteTask } =
-  tasksSlice.actions;
+export const {
+  addTask,
+  completeTask,
+  toggleTask,
+  deleteTask,
+  editTaskMessage,
+} = tasksSlice.actions;
 
 export const selectTaskById = (taskId: TaskId) => (state: TasksState) =>
   state.tasks[taskId];
