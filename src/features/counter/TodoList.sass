@@ -35,13 +35,22 @@
 
 
 .AddTask
-  border: none
-  border-bottom: 1px solid #eee
-  display: block
-  margin-left: 50px
-  width: calc(100% - 50px)
-  box-sizing: border-box
-  font-size: inherit
-  outline: none
-  &::placeholder
-    color: #ccc
+  display: flex
+  input.AddTaskMessage
+    flex-grow: 1
+    border: none
+    border-bottom: 1px solid #eee
+    //display: block
+    //margin-left: 50px
+    width: calc(100% - 50px)
+    box-sizing: border-box
+    font-size: inherit
+    outline: none
+    &::placeholder
+      color: #ccc
+  .AutoEmoji
+    display: block
+    width: 1em
+    height: 1em
+
+

@@ -61,7 +61,9 @@ export const tasksSlice = createSlice({
       state,
       action: PayloadAction<{ taskId: TaskId; message: string }>
     ) => {
-      state.tasks[action.payload.taskId].message = action.payload.message;
+      if (action.payload.message)
+        state.tasks[action.payload.taskId].message = action.payload.message;
+      else delete state.tasks[action.payload.taskId];
     },
   },
 });

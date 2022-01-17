@@ -10,6 +10,7 @@ import {
 import classNames from "classnames";
 import "./TodoList.sass";
 import { AddTask } from "./AddTask";
+import { AutoEmoji } from "./AutoEmoji";
 
 export const TodoList: FunctionComponent = () => {
   const unblockedTasks = useSelector(selectAllTasks);
@@ -25,7 +26,10 @@ export const TodoList: FunctionComponent = () => {
   );
 };
 
-export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
+export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
+  task,
+  emojis = false,
+}) => {
   const dispatch = useDispatch();
   return (
     <li className={classNames("TaskView", { completed: task.completed })}>
@@ -35,6 +39,7 @@ export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
         checked={task.completed}
         onClick={() => dispatch(toggleTask(task.id))}
       />
+      {emojis && <AutoEmoji search={task.message} />}
       <input
         className="TaskViewMessage"
         type="text"
@@ -46,7 +51,6 @@ export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
           )
         }
       />
-      <button>Zz</button>
     </li>
   );
 };
