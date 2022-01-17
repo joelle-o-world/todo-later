@@ -17,7 +17,14 @@ export interface TasksState {
 }
 
 const initialState: TasksState = {
-  tasks: {},
+  tasks: {
+    eg1: {
+      id: "eg1",
+      message: "Buy chickpeas",
+      blockedBy: [],
+      completed: false,
+    },
+  },
 };
 
 export const tasksSlice = createSlice({
