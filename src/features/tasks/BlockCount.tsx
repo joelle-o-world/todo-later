@@ -18,9 +18,9 @@ export const BlockCount: FunctionComponent<{ taskId: string }> = ({
   return blockedTasks.length ? (
     <span>
       <MdOutlineWatchLater />
-      {`${task.completed ? "Held up" : "Holding up"} ${blockedTasks.length} ${
-        blockedTasks.length > 1 ? "things" : "thing"
-      }`}
+      {blockedTasks.length > 1
+        ? `holding up ${blockedTasks.length} things`
+        : `then ${blockedTasks[0].message}`}
     </span>
   ) : null;
 };
