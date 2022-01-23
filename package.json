@@ -17,6 +17,7 @@
     "@types/uuid": "^8.3.4",
     "classnames": "^2.3.1",
     "emojilib": "^3.0.4",
+    "fuse.js": "^6.5.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",
