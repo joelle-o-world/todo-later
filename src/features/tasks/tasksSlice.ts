@@ -17,14 +17,7 @@ export interface TasksState {
 }
 
 const initialState: TasksState = {
-  tasks: {
-    eg1: {
-      id: "eg1",
-      message: "Buy chickpeas",
-      blockedBy: [],
-      completed: false,
-    },
-  },
+  tasks: {},
 };
 
 export const tasksSlice = createSlice({
@@ -137,6 +130,13 @@ export const selectUnblockedTasks = (state: RootState) =>
           !state.tasks.tasks[blockerId] ||
           state.tasks.tasks[blockerId].completed
       )
+  );
+
+export const selectBlockedTasks = (state: RootState) =>
+  Object.values(state.tasks.tasks).filter((task) =>
+    task?.blockedBy.some(
+      (blockerId) => state.tasks.tasks[blockerId]?.completed === false
+    )
   );
 
 export const selectTasksBlockedBy = (taskId: TaskId) => (state: RootState) => {

@@ -2,6 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   editTaskMessage,
+  selectAllTasks,
   selectUnblockedTasks,
   setTaskCompleted,
   Task,
@@ -14,11 +15,16 @@ import { AutoEmoji } from "./AutoEmoji";
 import { SnoozeBox } from "./SnoozeBox";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { BlockCount } from "./BlockCount";
+import { RootState } from "../../app/store";
 
-export const TodoList: FunctionComponent = () => {
-  const unblockedTasks = useSelector(selectUnblockedTasks);
+export const TodoList: FunctionComponent<{
+  selector?: (state: RootState) => Task[];
+  title?: string;
+}> = ({ selector = selectAllTasks, title }) => {
+  const unblockedTasks = useSelector(selector);
   return (
     <div className="TodoList">
+      {title && <h2>{title}</h2>}
       <ul>
         {unblockedTasks.map((task) => (
           <TaskView task={task} key={task.id} />

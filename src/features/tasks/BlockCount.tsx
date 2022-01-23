@@ -6,14 +6,16 @@ import { MdOutlineWatchLater } from "react-icons/md";
 export const BlockCount: FunctionComponent<{ taskId: string }> = ({
   taskId,
 }) => {
-  const blockedTasks = useSelector(selectTasksBlockedBy(taskId));
+  const blockedTasks = useSelector(selectTasksBlockedBy(taskId)).filter(
+    (task) => !task.completed
+  );
   const task = useSelector(selectTaskById(taskId));
 
   return blockedTasks.length ? (
     <span>
       <MdOutlineWatchLater />
-      {`${task.completed ? "Blocked" : "Blocking"} ${blockedTasks.length} ${
-        blockedTasks.length > 1 ? "tasks" : "task"
+      {`${task.completed ? "Held up" : "Holding up"} ${blockedTasks.length} ${
+        blockedTasks.length > 1 ? "things" : "thing"
       }`}
     </span>
   ) : null;
