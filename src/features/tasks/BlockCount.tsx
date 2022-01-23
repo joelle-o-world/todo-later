@@ -13,7 +13,6 @@ export const BlockCount: FunctionComponent<{ taskId: string }> = ({
   const blockedTasks = useSelector(selectTasksBlockedBy(taskId)).filter(
     (task) => !task.completed
   );
-  const task = useSelector(selectTaskById(taskId));
 
   return blockedTasks.length ? (
     <span>

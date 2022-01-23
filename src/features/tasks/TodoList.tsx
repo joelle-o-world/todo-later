@@ -15,6 +15,7 @@ import { MdOutlineWatchLater } from "react-icons/md";
 import { BlockCount, BlockerCount } from "./BlockCount";
 import { RootState } from "../../app/store";
 import { selectSettings } from "../settings/settingsSlice";
+import { DeleteTaskButton } from "./DeleteTaskButton";
 
 export const TodoList: FunctionComponent<{
   selector?: (state: RootState) => Task[];
@@ -50,16 +51,19 @@ export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
   return (
     <li className={classNames("TaskView", { completed: task.completed })}>
       <div className="TaskMargin">
-        {snoozeBoxVisible ? (
+        {snoozeBoxVisible && !task.completed && (
           <SnoozeBox
             onBlur={() => setSnoozeBoxVisible(false)}
             taskId={task.id}
           />
-        ) : (
+        )}
+        {!snoozeBoxVisible && !task.completed && (
           <button className="snooze" onClick={() => setSnoozeBoxVisible(true)}>
             <MdOutlineWatchLater />
           </button>
         )}
+        {task.completed && <DeleteTaskButton taskId={task.id} />}
+
         {!snoozeBoxVisible && (
           <input
             type="checkbox"

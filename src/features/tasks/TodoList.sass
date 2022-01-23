@@ -4,8 +4,18 @@
   font-size: inherit
   outline: none
   font-family: inherit
+  background-color: transparent
+
+@mixin TransparentButton
+  background: none
+  border: none
+  visibility: hidden
+  font-size: 1em
+  cursor: pointer
 
   
+body
+  background-color: black
 
 .TodoList
   max-width: 600px
@@ -14,6 +24,7 @@
   padding: 25px
   font-size: 12px
   font-family: monospace
+  background-color: white
 
 
 .TaskView
@@ -22,14 +33,11 @@
   flex-direction: row
   justify-content: stretch
   margin-bottom: .5em
-  button.snooze
-    background: none
-    border: none
-    visibility: hidden
-    font-size: 1em
-    cursor: pointer
-  &:hover button.snooze
-    visibility: visible
+  button.snooze, button.DeleteTaskButton
+    @include TransparentButton
+  &:hover 
+    button.snooze, button.DeleteTaskButton
+      visibility: visible
 
     
   input.TaskViewTickbox
@@ -67,6 +75,7 @@
 .AddTask
   display: flex
   input.AddTaskMessage
+    @include TaskInput
     flex-grow: 1
     border: none
     border-bottom: 1px solid #eee
@@ -95,3 +104,6 @@
     top: 100%
     left: 1em
     background-color: #eee
+    >li
+      display: block
+      width: 400px
