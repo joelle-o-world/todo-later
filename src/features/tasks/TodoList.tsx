@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   editTaskMessage,
   selectUnblockedTasks,
+  setTaskCompleted,
   Task,
   toggleTask,
 } from "./tasksSlice";
@@ -20,7 +21,7 @@ export const TodoList: FunctionComponent = () => {
     <div className="TodoList">
       <ul>
         {unblockedTasks.map((task) => (
-          <TaskView task={task} />
+          <TaskView task={task} key={task.id} />
         ))}
       </ul>
       <AddTask autoFocus />
@@ -53,7 +54,14 @@ export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
             type="checkbox"
             className="TaskViewTickbox"
             checked={task.completed}
-            onClick={() => dispatch(toggleTask(task.id))}
+            onChange={(e) =>
+              dispatch(
+                setTaskCompleted({
+                  taskId: task.id,
+                  completed: e.target.checked,
+                })
+              )
+            }
           />
         )}
       </div>

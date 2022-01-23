@@ -65,14 +65,25 @@ export const tasksSlice = createSlice({
       task.completed = true;
     },
 
+    setTaskCompleted: (
+      state,
+      action: PayloadAction<{ taskId: TaskId; completed: boolean }>
+    ) => {
+      const task = state.tasks[action.payload.taskId];
+      task.completed = action.payload.completed;
+    },
+
     toggleTask: (state, action: PayloadAction<TaskId>) => {
       const task = state.tasks[action.payload];
       task.completed = !task.completed;
     },
 
     deleteTask: (state, action: PayloadAction<TaskId>) => {
+      // FIXME: This isn't working...
+      for (let task of Object.values(state.tasks))
+        if (task.blockedBy)
+          task.blockedBy = task.blockedBy.filter((id) => id !== action.payload);
       delete state.tasks[action.payload];
-      // TODO: Handle dependent tasks?
     },
 
     editTaskMessage: (
@@ -90,6 +101,7 @@ export const {
   addTask,
   addDependency,
   completeTask,
+  setTaskCompleted,
   toggleTask,
   deleteTask,
   editTaskMessage,
@@ -106,7 +118,9 @@ export const selectUnblockedTasks = (state: RootState) =>
     (task: Task) =>
       !task.blockedBy ||
       task.blockedBy.every(
-        (blockerId) => state.tasks.tasks[blockerId].completed
+        (blockerId) =>
+          !state.tasks.tasks[blockerId] ||
+          state.tasks.tasks[blockerId].completed
       )
   );
 

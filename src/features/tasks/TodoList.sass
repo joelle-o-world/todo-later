@@ -28,8 +28,7 @@
     font-size: 1em
   &:hover button.snooze
     visibility: visible
-  .SnoozeBoxMessage
-    @include TaskInput
+
     
   input.TaskViewTickbox
     font-size: inherit
@@ -80,5 +79,13 @@
     height: 1em
 
 .SnoozeBox
+  position: relative
   display: flex
   align-items: center
+  .SnoozeBoxMessage
+    @include TaskInput
+  .suggestions
+    position: absolute
+    top: 100%
+    left: 1em
+    background-color: #eee
