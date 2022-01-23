@@ -5,7 +5,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { MdOutlineArrowRightAlt, MdOutlineArrowRight } from "react-icons/md";
+import {
+  MdOutlineArrowRightAlt,
+  MdOutlineArrowRight,
+  MdOutlineTimer,
+} from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDependency,
@@ -25,7 +29,7 @@ export const SnoozeBox: FunctionComponent<{
 
   return (
     <div className="SnoozeBox">
-      <MdOutlineArrowRight />
+      <MdOutlineTimer />
       <input
         className="SnoozeBoxMessage"
         autoFocus
@@ -33,6 +37,8 @@ export const SnoozeBox: FunctionComponent<{
         onChange={(e) => setMessage(e.target.value)}
         value={message}
         ref={ref}
+        // TODO: Move this behaviour into a SelfResizingInput component
+        style={{ width: `${20 + 7 * message.length}px` }}
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             dispatch(addDependency({ dependentTaskId: taskId, message }));
