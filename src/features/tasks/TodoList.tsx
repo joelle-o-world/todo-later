@@ -16,6 +16,7 @@ import { SnoozeBox } from "./SnoozeBox";
 import { MdOutlineWatchLater } from "react-icons/md";
 import { BlockCount, BlockerCount } from "./BlockCount";
 import { RootState } from "../../app/store";
+import { selectSettings } from "../settings/settingsSlice";
 
 export const TodoList: FunctionComponent<{
   selector?: (state: RootState) => Task[];
@@ -43,12 +44,10 @@ export const TodoList: FunctionComponent<{
   );
 };
 
-export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
-  task,
-  emojis = true,
-}) => {
+export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
   const dispatch = useDispatch();
   const [snoozeBoxVisible, setSnoozeBoxVisible] = useState(false);
+  const { emojiMode } = useSelector(selectSettings);
 
   return (
     <li className={classNames("TaskView", { completed: task.completed })}>
@@ -78,7 +77,7 @@ export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
             }
           />
         )}
-        {emojis && <AutoEmoji pattern={task.message} />}
+        {emojiMode && <AutoEmoji pattern={task.message} />}
       </div>
       <div className="TaskContent">
         <input
