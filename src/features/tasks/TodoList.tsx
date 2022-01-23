@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   editTaskMessage,
@@ -11,9 +11,11 @@ import classNames from "classnames";
 import "./TodoList.sass";
 import { AddTask } from "./AddTask";
 import { AutoEmoji } from "./AutoEmoji";
+import { SnoozeBox } from "./SnoozeBox";
+import { MdOutlineWatchLater, MdOutlineArrowRightAlt } from "react-icons/md";
 
 export const TodoList: FunctionComponent = () => {
-  const unblockedTasks = useSelector(selectAllTasks);
+  const unblockedTasks = useSelector(selectUnblockedTasks);
   return (
     <div className="TodoList">
       <ul>
@@ -31,20 +33,31 @@ export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
   emojis = false,
 }) => {
   const dispatch = useDispatch();
+  const [snoozeBoxVisible, setSnoozeBoxVisible] = useState(false);
+
   return (
     <li className={classNames("TaskView", { completed: task.completed })}>
-      <input
-        type="checkbox"
-        className="TaskViewTickbox"
-        checked={task.completed}
-        onClick={() => dispatch(toggleTask(task.id))}
-      />
+      {snoozeBoxVisible ? (
+        <SnoozeBox onBlur={() => setSnoozeBoxVisible(false)} taskId={task.id} />
+      ) : (
+        <button className="snooze" onClick={() => setSnoozeBoxVisible(true)}>
+          <MdOutlineWatchLater />
+        </button>
+      )}
+      {!snoozeBoxVisible && (
+        <input
+          type="checkbox"
+          className="TaskViewTickbox"
+          checked={task.completed}
+          onClick={() => dispatch(toggleTask(task.id))}
+        />
+      )}
       {emojis && <AutoEmoji search={task.message} />}
       <input
         className="TaskViewMessage"
         type="text"
         value={task.message}
-        readOnly={task.completed}
+        readOnly={task.completed || snoozeBoxVisible}
         onChange={(e) =>
           dispatch(
             editTaskMessage({ taskId: task.id, message: e.target.value })
