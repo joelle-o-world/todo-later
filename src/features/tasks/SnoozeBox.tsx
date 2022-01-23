@@ -1,15 +1,5 @@
-import React, {
-  FunctionComponent,
-  MutableRefObject,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  MdOutlineArrowRightAlt,
-  MdOutlineArrowRight,
-  MdOutlineTimer,
-} from "react-icons/md";
+import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import { MdOutlineArrowRightAlt, MdOutlineTimer } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDependency,
