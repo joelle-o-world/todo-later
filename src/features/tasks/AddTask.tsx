@@ -11,7 +11,7 @@ export const AddTask: FunctionComponent<{
   const dispatch = useDispatch();
   return (
     <div className="AddTask">
-      {emojis && <AutoEmoji search={message} />}
+      {emojis && <AutoEmoji pattern={message} />}
       <input
         className="AddTaskMessage"
         placeholder="+ Add a new task"

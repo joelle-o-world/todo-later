@@ -45,7 +45,7 @@ export const TodoList: FunctionComponent<{
 
 export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
   task,
-  emojis = false,
+  emojis = true,
 }) => {
   const dispatch = useDispatch();
   const [snoozeBoxVisible, setSnoozeBoxVisible] = useState(false);
@@ -78,7 +78,7 @@ export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
             }
           />
         )}
-        {emojis && <AutoEmoji search={task.message} />}
+        {emojis && <AutoEmoji pattern={task.message} />}
       </div>
       <div className="TaskContent">
         <input
