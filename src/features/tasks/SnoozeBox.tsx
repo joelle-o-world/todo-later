@@ -1,12 +1,19 @@
 import React, {
   FunctionComponent,
   MutableRefObject,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { MdOutlineArrowRightAlt, MdOutlineArrowRight } from "react-icons/md";
-import { useDispatch } from "react-redux";
-import { addDependency } from "./tasksSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addDependency,
+  assignDependency,
+  selectAllTasks,
+  TaskId,
+} from "./tasksSlice";
+import Fuse from "fuse.js";
 
 export const SnoozeBox: FunctionComponent<{
   taskId: string;
@@ -22,7 +29,7 @@ export const SnoozeBox: FunctionComponent<{
       <input
         className="SnoozeBoxMessage"
         autoFocus
-        onBlur={onBlur}
+        onBlur={() => setTimeout(onBlur, 100)}
         onChange={(e) => setMessage(e.target.value)}
         value={message}
         ref={ref}
@@ -34,6 +41,44 @@ export const SnoozeBox: FunctionComponent<{
         }}
       />
       <MdOutlineArrowRightAlt />
+      <Suggestions pattern={message} taskId={taskId} />
+    </div>
+  );
+};
+
+export const Suggestions: FunctionComponent<{
+  pattern: string;
+  taskId: TaskId;
+}> = ({ pattern, taskId }) => {
+  const allTasks = useSelector(selectAllTasks);
+  const fuse = useMemo(
+    () => new Fuse(allTasks, { keys: ["message"] }),
+    [allTasks]
+  );
+  const suggestions = useMemo(
+    () => fuse.search(pattern).filter((item) => item.item.id !== taskId),
+    [taskId, fuse, pattern]
+  );
+  const dispatch = useDispatch();
+  return (
+    <div className="Suggestions">
+      {suggestions.map(({ item }) => {
+        return (
+          <li
+            key={item.id}
+            onClick={() => {
+              dispatch(
+                assignDependency({
+                  dependentTaskId: taskId,
+                  dependencyTaskId: item.id,
+                })
+              );
+            }}
+          >
+            {item.message}
+          </li>
+        );
+      })}
     </div>
   );
 };

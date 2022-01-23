@@ -60,6 +60,20 @@ export const tasksSlice = createSlice({
         : [taskId];
     },
 
+    assignDependency: (
+      state,
+      action: PayloadAction<{
+        dependentTaskId: TaskId;
+        dependencyTaskId: TaskId;
+      }>
+    ) => {
+      const { dependentTaskId, dependencyTaskId } = action.payload;
+      const dependent = state.tasks[dependentTaskId];
+      dependent.blockedBy = dependent.blockedBy
+        ? [...dependent.blockedBy, dependencyTaskId]
+        : [dependencyTaskId];
+    },
+
     completeTask: (state, action: PayloadAction<TaskId>) => {
       const task = state.tasks[action.payload];
       task.completed = true;
@@ -100,6 +114,7 @@ export const tasksSlice = createSlice({
 export const {
   addTask,
   addDependency,
+  assignDependency,
   completeTask,
   setTaskCompleted,
   toggleTask,
