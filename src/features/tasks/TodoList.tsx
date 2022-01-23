@@ -14,23 +14,31 @@ import { AddTask } from "./AddTask";
 import { AutoEmoji } from "./AutoEmoji";
 import { SnoozeBox } from "./SnoozeBox";
 import { MdOutlineWatchLater } from "react-icons/md";
-import { BlockCount } from "./BlockCount";
+import { BlockCount, BlockerCount } from "./BlockCount";
 import { RootState } from "../../app/store";
 
 export const TodoList: FunctionComponent<{
   selector?: (state: RootState) => Task[];
   title?: string;
-}> = ({ selector = selectAllTasks, title }) => {
-  const unblockedTasks = useSelector(selector);
+  showAddTask?: boolean;
+  hideIfEmpty?: boolean;
+}> = ({
+  selector = selectAllTasks,
+  title,
+  showAddTask = false,
+  hideIfEmpty = false,
+}) => {
+  const tasks = useSelector(selector);
+  if (hideIfEmpty && tasks.length === 0) return null;
   return (
     <div className="TodoList">
       {title && <h2>{title}</h2>}
       <ul>
-        {unblockedTasks.map((task) => (
+        {tasks.map((task) => (
           <TaskView task={task} key={task.id} />
         ))}
       </ul>
-      <AddTask autoFocus />
+      {showAddTask && <AddTask autoFocus />}
     </div>
   );
 };
@@ -70,9 +78,9 @@ export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
             }
           />
         )}
+        {emojis && <AutoEmoji search={task.message} />}
       </div>
       <div className="TaskContent">
-        {emojis && <AutoEmoji search={task.message} />}
         <input
           className="TaskViewMessage"
           type="text"
@@ -86,6 +94,7 @@ export const TaskView: FunctionComponent<{ task: Task; emojis?: boolean }> = ({
         />
         <p className="stats">
           <BlockCount taskId={task.id} />
+          <BlockerCount taskId={task.id} />
         </p>
       </div>
     </li>

@@ -152,4 +152,15 @@ export const selectTasksBlockedBy = (taskId: TaskId) => (state: RootState) => {
   return tasks.slice(1);
 };
 
+export const selectBlockersFor = (taskId: TaskId) => (state: RootState) => {
+  let tasks = [state.tasks.tasks[taskId]];
+  for (let i = 0; i < tasks.length; ++i)
+    if (tasks[i].blockedBy)
+      for (let blockerId of tasks[i].blockedBy) {
+        let blocker = state.tasks.tasks[blockerId];
+        if (!tasks.includes(blocker)) tasks.push(blocker);
+      }
+  return tasks.slice(1);
+};
+
 export default tasksSlice.reducer;

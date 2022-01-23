@@ -9,8 +9,8 @@ import {
 export default function App() {
   return (
     <div>
-      <TodoList title="Now" selector={selectUnblockedTasks} />
-      <TodoList title="Later" selector={selectBlockedTasks} />
+      <TodoList title="Now" selector={selectUnblockedTasks} showAddTask />
+      <TodoList title="Later" selector={selectBlockedTasks} hideIfEmpty />
     </div>
   );
 }
