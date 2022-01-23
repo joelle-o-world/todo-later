@@ -3,10 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   editTaskMessage,
   selectAllTasks,
-  selectUnblockedTasks,
   setTaskCompleted,
   Task,
-  toggleTask,
 } from "./tasksSlice";
 import classNames from "classnames";
 import "./TodoList.sass";

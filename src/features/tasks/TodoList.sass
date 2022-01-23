@@ -1,7 +1,6 @@
 @mixin TaskInput
   border: none
   display: block
-  flex-grow: 1
   font-size: inherit
   outline: none
   font-family: inherit
@@ -13,14 +12,16 @@
   margin-left: auto
   margin-right: auto
   padding: 25px
-  font-size: 25px
+  font-size: 12px
   font-family: monospace
 
 
 .TaskView
   display: flex
   align-items: baseline
+  flex-direction: row
   justify-content: stretch
+  margin-bottom: .5em
   button.snooze
     background: none
     border: none
@@ -41,10 +42,13 @@
     display: flex
     flex-direction: column
     align-items: stretch
+    flex-grow: 1
     input.TaskViewMessage
+      width: 100%
       @include TaskInput
     p.stats
       font-size: 8px
+      margin: 0px
       svg
         vertical-align: middle
         font-size: 1.3em
@@ -52,7 +56,6 @@
 
   transition: border-color 1s
   border: 1px solid transparent
-  padding: 5px
   &:focus-within
     border: 1px solid #eee
 
