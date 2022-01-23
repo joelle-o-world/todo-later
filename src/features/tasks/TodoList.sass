@@ -4,6 +4,7 @@
   flex-grow: 1
   font-size: inherit
   outline: none
+  font-family: inherit
 
   
 
@@ -13,11 +14,12 @@
   margin-right: auto
   padding: 25px
   font-size: 25px
+  font-family: monospace
 
 
 .TaskView
   display: flex
-  align-items: center
+  align-items: baseline
   justify-content: stretch
   button.snooze
     background: none
@@ -33,8 +35,19 @@
     font-size: inherit
     height: 1em
     margin-right: 20px
-  input.TaskViewMessage
-    @include TaskInput
+
+  div.TaskContent
+    display: flex
+    flex-direction: column
+    align-items: stretch
+    input.TaskViewMessage
+      @include TaskInput
+    p.stats
+      font-size: 8px
+      svg
+        vertical-align: middle
+        font-size: 1.3em
+        margin-right: .3em
 
   transition: border-color 1s
   border: 1px solid transparent

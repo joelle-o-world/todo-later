@@ -61,12 +61,12 @@ export const tasksSlice = createSlice({
     },
 
     completeTask: (state, action: PayloadAction<TaskId>) => {
-      const task = selectTaskById(action.payload)(state);
+      const task = state.tasks[action.payload];
       task.completed = true;
     },
 
     toggleTask: (state, action: PayloadAction<TaskId>) => {
-      const task = selectTaskById(action.payload)(state);
+      const task = state.tasks[action.payload];
       task.completed = !task.completed;
     },
 
@@ -95,8 +95,8 @@ export const {
   editTaskMessage,
 } = tasksSlice.actions;
 
-export const selectTaskById = (taskId: TaskId) => (state: TasksState) =>
-  state.tasks[taskId];
+export const selectTaskById = (taskId: TaskId) => (state: RootState) =>
+  state.tasks.tasks[taskId];
 
 export const selectAllTasks = (state: RootState) =>
   Object.values(state.tasks.tasks);
@@ -109,5 +109,18 @@ export const selectUnblockedTasks = (state: RootState) =>
         (blockerId) => state.tasks.tasks[blockerId].completed
       )
   );
+
+export const selectTasksBlockedBy = (taskId: TaskId) => (state: RootState) => {
+  let tasks = [state.tasks.tasks[taskId]];
+
+  for (let i = 0; i < tasks.length; ++i)
+    for (let newTask of Object.values(state.tasks.tasks).filter((task) =>
+      task.blockedBy?.includes(tasks[i].id)
+    )) {
+      if (!tasks.includes(newTask)) tasks.push(newTask);
+    }
+
+  return tasks.slice(1);
+};
 
 export default tasksSlice.reducer;
