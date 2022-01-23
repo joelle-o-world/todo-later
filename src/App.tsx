@@ -10,7 +10,7 @@ import { ToggleEmojiMode } from "./features/settings/ToggleEmojiMode";
 export default function App() {
   return (
     <div>
-      <TodoList title="Now" selector={selectUnblockedTasks} showAddTask />
+      <TodoList selector={selectUnblockedTasks} showAddTask />
       <TodoList title="Later" selector={selectBlockedTasks} hideIfEmpty />
       <footer className="StickyBottom">
         <ToggleEmojiMode />
