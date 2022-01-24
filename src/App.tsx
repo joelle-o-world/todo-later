@@ -2,16 +2,22 @@ import React from "react";
 import { TodoList } from "./features/tasks/TodoList";
 import "./App.css";
 import {
-  selectBlockedTasks,
-  selectUnblockedTasks,
+  selectActionableTasks,
+  selectInactionablTasks,
 } from "./features/tasks/tasksSlice";
 import { ToggleEmojiMode } from "./features/settings/ToggleEmojiMode";
+import useCurrentDate from "./features/tasks/useCurrentDate";
 
 export default function App() {
+  const now = useCurrentDate();
   return (
     <div>
-      <TodoList selector={selectUnblockedTasks} showAddTask />
-      <TodoList title="Later" selector={selectBlockedTasks} hideIfEmpty />
+      <TodoList selector={selectActionableTasks(now)} showAddTask />
+      <TodoList
+        title="Later"
+        selector={selectInactionablTasks(now)}
+        hideIfEmpty
+      />
       <footer className="StickyBottom">
         <ToggleEmojiMode />
       </footer>

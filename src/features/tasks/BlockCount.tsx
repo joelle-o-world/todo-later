@@ -6,6 +6,8 @@ import {
   selectTasksBlockedBy,
 } from "./tasksSlice";
 import { MdOutlineWatchLater } from "react-icons/md";
+import { RiZzzFill } from "react-icons/ri";
+import { formatRelative } from "date-fns";
 
 export const BlockCount: FunctionComponent<{ taskId: string }> = ({
   taskId,
@@ -19,7 +21,7 @@ export const BlockCount: FunctionComponent<{ taskId: string }> = ({
       <MdOutlineWatchLater />
       {blockedTasks.length > 1
         ? `holding up ${blockedTasks.length} things`
-        : `then ${blockedTasks[0].message}`}
+        : `then: ${blockedTasks[0].message}`}
     </span>
   ) : null;
 };
@@ -35,7 +37,22 @@ export const BlockerCount: FunctionComponent<{ taskId: string }> = ({
       <MdOutlineWatchLater />
       {blockers.length > 1
         ? `held up by ${blockers.length} things`
-        : `after ${blockers[0].message}`}
+        : `after: ${blockers[0].message}`}
     </span>
   ) : null;
+};
+
+export const SnoozedIndicator: FunctionComponent<{
+  taskId: string;
+  now: Date;
+}> = ({ taskId, now }) => {
+  const task = useSelector(selectTaskById(taskId));
+  if (task.snoozedUntil && new Date(task.snoozedUntil) > now)
+    return (
+      <span>
+        <RiZzzFill />
+        {`is snoozed until ${formatRelative(new Date(task.snoozedUntil), now)}`}
+      </span>
+    );
+  else return null;
 };

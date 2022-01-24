@@ -12,10 +12,11 @@ import { AddTask } from "./AddTask";
 import { AutoEmoji } from "./AutoEmoji";
 import { SnoozeBox } from "./SnoozeBox";
 import { MdOutlineWatchLater } from "react-icons/md";
-import { BlockCount, BlockerCount } from "./BlockCount";
+import { BlockCount, BlockerCount, SnoozedIndicator } from "./BlockCount";
 import { RootState } from "../../app/store";
 import { selectSettings } from "../settings/settingsSlice";
 import { DeleteTaskButton } from "./DeleteTaskButton";
+import useCurrentDate from "./useCurrentDate";
 
 export const TodoList: FunctionComponent<{
   selector?: (state: RootState) => Task[];
@@ -47,6 +48,7 @@ export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
   const dispatch = useDispatch();
   const [snoozeBoxVisible, setSnoozeBoxVisible] = useState(false);
   const { emojiMode } = useSelector(selectSettings);
+  const now = useCurrentDate();
 
   return (
     <li className={classNames("TaskView", { completed: task.completed })}>
@@ -96,6 +98,7 @@ export const TaskView: FunctionComponent<{ task: Task }> = ({ task }) => {
         <p className="stats">
           <BlockCount taskId={task.id} />
           <BlockerCount taskId={task.id} />
+          <SnoozedIndicator taskId={task.id} now={now} />
         </p>
       </div>
     </li>

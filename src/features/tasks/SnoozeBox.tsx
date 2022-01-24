@@ -1,13 +1,24 @@
-import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MdOutlineArrowRightAlt, MdOutlineTimer } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDependency,
   assignDependency,
   selectAllTasks,
+  snoozeTask,
+  Task,
   TaskId,
 } from "./tasksSlice";
 import Fuse from "fuse.js";
+import { timeSuggestions } from "./getTimeSuggestions";
+import useCurrentDate from "./useCurrentDate";
+import { PayloadAction } from "@reduxjs/toolkit";
 
 export const SnoozeBox: FunctionComponent<{
   taskId: string;
@@ -16,6 +27,23 @@ export const SnoozeBox: FunctionComponent<{
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const ref = useRef(null as null | HTMLInputElement);
+  const suggestions = useSuggestions({ taskId, pattern: message });
+  const handleSubmit = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        if (suggestions.length) {
+          const action = acceptSuggestion(taskId, suggestions[0].item, now);
+          console.log(now, action, suggestions[0]);
+          dispatch(action);
+        } else {
+          dispatch(addDependency({ dependentTaskId: taskId, message }));
+        }
+        ref.current?.blur();
+      }
+    },
+    [suggestions, taskId]
+  );
+  const now = useCurrentDate();
 
   return (
     <div className="SnoozeBox">
@@ -29,51 +57,114 @@ export const SnoozeBox: FunctionComponent<{
         ref={ref}
         // TODO: Move this behaviour into a SelfResizingInput component
         style={{ width: `${20 + 7 * message.length}px` }}
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            dispatch(addDependency({ dependentTaskId: taskId, message }));
-            ref.current?.blur();
-          }
-        }}
+        onKeyPress={handleSubmit}
       />
       <MdOutlineArrowRightAlt />
-      <Suggestions pattern={message} taskId={taskId} />
+      <Suggestions suggestions={suggestions} taskId={taskId} />
     </div>
   );
 };
 
-export const Suggestions: FunctionComponent<{
-  pattern: string;
+export type Suggestion =
+  | { kind: "task"; task: Task }
+  | {
+      kind: "time";
+      time: { label: string; dateFunction: (now: Date) => Date };
+    };
+
+const useSuggestions = ({
+  taskId,
+  pattern,
+}: {
   taskId: TaskId;
-}> = ({ pattern, taskId }) => {
+  pattern: string;
+}) => {
   const allTasks = useSelector(selectAllTasks);
-  const fuse = useMemo(
-    () => new Fuse(allTasks, { keys: ["message"] }),
-    [allTasks]
-  );
+  const fuse = useMemo(() => {
+    const tasks = allTasks.map((task) => ({ kind: "task" as const, task }));
+    return new Fuse<Suggestion>([...timeSuggestions, ...tasks], {
+      keys: ["task.message", "time.label"],
+    });
+  }, [allTasks]);
   const suggestions = useMemo(
-    () => fuse.search(pattern).filter((item) => item.item.id !== taskId),
+    () =>
+      fuse
+        .search(pattern)
+        .filter(
+          (result) =>
+            result.item.kind !== "task" || result.item.task.id !== taskId
+        ),
     [taskId, fuse, pattern]
   );
+  return suggestions;
+};
+
+function acceptSuggestion(
+  taskId: TaskId,
+  suggestion: Suggestion,
+  now: Date
+): PayloadAction<any> {
+  if (suggestion.kind === "task")
+    return assignDependency({
+      dependentTaskId: taskId,
+      dependencyTaskId: suggestion.task.id,
+    });
+  else if (suggestion.kind === "time")
+    return snoozeTask({
+      taskId,
+      until: suggestion.time.dateFunction(now).toString(),
+    });
+  // @ts-ignore
+  else throw `Unexpected suggestion kind: ${suggestion.kind}`;
+}
+
+export const Suggestions: FunctionComponent<{
+  suggestions: Fuse.FuseResult<Suggestion>[];
+  taskId: TaskId;
+}> = ({ suggestions, taskId }) => {
+  const now = useCurrentDate();
+
   const dispatch = useDispatch();
   return (
     <div className="Suggestions">
       {suggestions.map(({ item }) => {
-        return (
-          <li
-            key={item.id}
-            onClick={() => {
-              dispatch(
-                assignDependency({
-                  dependentTaskId: taskId,
-                  dependencyTaskId: item.id,
-                })
-              );
-            }}
-          >
-            {item.message}
-          </li>
-        );
+        if (item.kind === "task")
+          return (
+            <li
+              key={item.task.id}
+              onClick={() => {
+                dispatch(
+                  assignDependency({
+                    dependentTaskId: taskId,
+                    dependencyTaskId: item.task.id,
+                  })
+                );
+              }}
+            >
+              {item.task.message}
+            </li>
+          );
+        else if (item.kind === "time")
+          return (
+            <li
+              key={item.time.label}
+              onClick={() =>
+                dispatch(
+                  snoozeTask({
+                    taskId,
+                    until: item.time.dateFunction(now).toString(),
+                  })
+                )
+              }
+            >
+              {item.time.label}
+            </li>
+          );
+        else
+          throw new TypeError(
+            // @ts-ignore
+            `Unexpected suggestion kind: ${item.kind}`
+          );
       })}
     </div>
   );

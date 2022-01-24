@@ -8,6 +8,7 @@ export interface Task {
   completed: boolean;
   message: string;
   blockedBy: TaskId[];
+  snoozedUntil?: string;
 }
 
 export interface TasksState {
@@ -86,7 +87,7 @@ export const tasksSlice = createSlice({
     },
 
     deleteTask: (state, action: PayloadAction<TaskId>) => {
-      // FIXME: This isn't working...
+      // FIXME: This loop isn't working...
       for (let task of Object.values(state.tasks))
         if (task.blockedBy)
           task.blockedBy = task.blockedBy.filter((id) => id !== action.payload);
@@ -101,6 +102,18 @@ export const tasksSlice = createSlice({
         state.tasks[action.payload.taskId].message = action.payload.message;
       else delete state.tasks[action.payload.taskId];
     },
+
+    snoozeTask: (
+      state,
+      action: PayloadAction<{ taskId: TaskId; until: string }>
+    ) => {
+      const { taskId, until } = action.payload;
+      state.tasks[taskId].snoozedUntil = until;
+    },
+
+    unsnoozeTask: (state, action: PayloadAction<TaskId>) => {
+      delete state.tasks[action.payload].snoozedUntil;
+    },
   },
 });
 
@@ -113,6 +126,8 @@ export const {
   toggleTask,
   deleteTask,
   editTaskMessage,
+  snoozeTask,
+  unsnoozeTask,
 } = tasksSlice.actions;
 
 export const selectTaskById = (taskId: TaskId) => (state: RootState) =>
@@ -132,12 +147,29 @@ export const selectUnblockedTasks = (state: RootState) =>
       )
   );
 
+/** Tasks that are unblocked and unsnoozed */
+export const selectActionableTasks =
+  (now = new Date()) =>
+  (state: RootState) => {
+    return selectUnblockedTasks(state).filter(
+      (task) => !task.snoozedUntil || new Date(task.snoozedUntil) < now
+    );
+  };
+
 export const selectBlockedTasks = (state: RootState) =>
   Object.values(state.tasks.tasks).filter((task) =>
     task?.blockedBy.some(
       (blockerId) => state.tasks.tasks[blockerId]?.completed === false
     )
   );
+
+export const selectInactionablTasks =
+  (now = new Date()) =>
+  (state: RootState) => {
+    const allTasks = selectAllTasks(state);
+    const actionableTasks = selectActionableTasks(now)(state);
+    return allTasks.filter((task) => !actionableTasks.includes(task));
+  };
 
 export const selectTasksBlockedBy = (taskId: TaskId) => (state: RootState) => {
   let tasks = [state.tasks.tasks[taskId]];
