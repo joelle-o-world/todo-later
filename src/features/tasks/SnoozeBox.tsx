@@ -5,7 +5,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { MdOutlineArrowRightAlt, MdOutlineTimer } from "react-icons/md";
+import {
+  MdBlock,
+  MdOutlineArrowRightAlt,
+  MdOutlineTimer,
+} from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDependency,
@@ -127,7 +131,7 @@ export const Suggestions: FunctionComponent<{
   const dispatch = useDispatch();
   return (
     <div className="Suggestions">
-      {suggestions.map(({ item }) => {
+      {suggestions.slice(0, 3).map(({ item }) => {
         if (item.kind === "task")
           return (
             <li
@@ -141,6 +145,7 @@ export const Suggestions: FunctionComponent<{
                 );
               }}
             >
+              <MdBlock />
               {item.task.message}
             </li>
           );
@@ -157,6 +162,7 @@ export const Suggestions: FunctionComponent<{
                 )
               }
             >
+              <MdOutlineTimer />
               {item.time.label}
             </li>
           );

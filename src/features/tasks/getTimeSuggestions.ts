@@ -16,8 +16,12 @@ const nextWeekday = (now: Date) => {
   else return addDays(now, 1);
 };
 
-const at9am = (now: Date) => addHours(startOfDay(now), 9);
-const afterWork = (now: Date) => addHours(addMinutes(startOfDay(now), 30), 17);
+const atTime =
+  (hours: number, minutes = 0) =>
+  (now: Date) =>
+    addMinutes(addHours(startOfDay(now), hours), minutes);
+const at9am = atTime(9);
+const afterWork = atTime(17, 30);
 const isWeekday = (now: Date) => getISODay(now) <= 4;
 
 const dateSuggestionLambdas: {
@@ -43,10 +47,16 @@ const dateSuggestionLambdas: {
   "next weekend": (now) => at9am(nextSaturday(now)),
   "this time next week": (now) => addDays(now, 7),
   now: (now) => now,
+  "in 5 minutes": (now) => addMinutes(now, 5),
+  "in 10 minutes": (now) => addMinutes(now, 10),
   "in 15 minutes": (now) => addMinutes(now, 15),
   "in 30 minutes": (now) => addMinutes(now, 15),
   "in 45 minutes": (now) => addMinutes(now, 15),
   "in 90 minutes": (now) => addMinutes(now, 15),
+  "after lunch": (now) => addMinutes(addHours(startOfDay(now), 13), 45),
+  "this evening": atTime(20),
+  "tomorrow evening": (now) => atTime(20)(addDays(now, 1)),
+  "next monday at 9am": (now) => at9am(nextMonday(now)),
 };
 
 export const timeSuggestions = (function getTimeSuggestions() {

@@ -9,7 +9,7 @@ import { ToggleEmojiMode } from "./features/settings/ToggleEmojiMode";
 import useCurrentDate from "./features/tasks/useCurrentDate";
 
 export default function App() {
-  const now = useCurrentDate();
+  const now = useCurrentDate(15);
   return (
     <div>
       <TodoList selector={selectActionableTasks(now)} showAddTask />
